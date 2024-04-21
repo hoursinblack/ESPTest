@@ -7,30 +7,39 @@ local function playerIsInView(targetPlayer)
     return true -- Replace this with your actual check
 end
 
--- Function to update player highlighting and tracking
-local function updatePlayers()
+-- Function to find the nearest player in view
+local function findNearestPlayerInView()
+    local nearestPlayer = nil
+    local nearestDistance = math.huge
+
     for _, otherPlayer in ipairs(game.Players:GetPlayers()) do
-        if otherPlayer ~= player then
-            -- Check if the other player has a character and is in view
-            if otherPlayer.Character and playerIsInView(otherPlayer) then
-                -- Highlight the player's character
-                -- Replace this with your actual highlighting code
-
-                -- Display username and health percentage
-                local displayName = otherPlayer.Name
-                local healthPercentage = otherPlayer.Character.Humanoid.Health / otherPlayer.Character.Humanoid.MaxHealth * 100
-                print(displayName .. " - Health: " .. healthPercentage .. "%")
-
-                -- Lock onto the player's head
-                local headPosition = otherPlayer.Character.Head.Position
-                game.Workspace.CurrentCamera.CFrame = CFrame.new(headPosition + Vector3.new(0, 3, 0), headPosition)
+        if otherPlayer ~= player and otherPlayer.Character then
+            local distance = (otherPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).magnitude
+            if distance < nearestDistance and playerIsInView(otherPlayer) then
+                nearestPlayer = otherPlayer
+                nearestDistance = distance
             end
         end
     end
+
+    return nearestPlayer
 end
 
--- Run the updatePlayers function periodically
+-- Function to lock onto the player's head
+local function lockOntoPlayerHead(targetPlayer)
+    if targetPlayer then
+        local headPosition = targetPlayer.Character.Head.Position
+        game.Workspace.CurrentCamera.CFrame = CFrame.new(headPosition + Vector3.new(0, 3, 0), headPosition)
+    end
+end
+
+-- Run the script
 while true do
-    updatePlayers()
+    -- Find nearest player in view
+    local nearestPlayer = findNearestPlayerInView()
+
+    -- Lock onto player's head if they are in view
+    lockOntoPlayerHead(nearestPlayer)
+
     wait(0.1) -- Adjust the delay as needed
 end
