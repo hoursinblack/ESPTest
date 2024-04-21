@@ -1,0 +1,36 @@
+-- Get the local player
+local player = game.Players.LocalPlayer
+
+-- Function to check if a player is in view
+local function playerIsInView(targetPlayer)
+    -- Perform raycasting or other checks to determine if the player is in view
+    return true -- Replace this with your actual check
+end
+
+-- Function to update player highlighting and tracking
+local function updatePlayers()
+    for _, otherPlayer in ipairs(game.Players:GetPlayers()) do
+        if otherPlayer ~= player then
+            -- Check if the other player has a character and is in view
+            if otherPlayer.Character and playerIsInView(otherPlayer) then
+                -- Highlight the player's character
+                -- Replace this with your actual highlighting code
+
+                -- Display username and health percentage
+                local displayName = otherPlayer.Name
+                local healthPercentage = otherPlayer.Character.Humanoid.Health / otherPlayer.Character.Humanoid.MaxHealth * 100
+                print(displayName .. " - Health: " .. healthPercentage .. "%")
+
+                -- Lock onto the player's head
+                local headPosition = otherPlayer.Character.Head.Position
+                game.Workspace.CurrentCamera.CFrame = CFrame.new(headPosition + Vector3.new(0, 3, 0), headPosition)
+            end
+        end
+    end
+end
+
+-- Run the updatePlayers function periodically
+while true do
+    updatePlayers()
+    wait(0.1) -- Adjust the delay as needed
+end
